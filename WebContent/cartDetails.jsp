@@ -91,6 +91,8 @@
 				List<CartBean> cartItems = new ArrayList<CartBean>();
 				cartItems = cart.getAllCartItems(userName);
 				double totAmount = 0;
+				String coupon = (String) session.getAttribute("coupon");
+				double currAmount = 0;
 				for (CartBean item : cartItems) {
 
 					String prodId = item.getProdId();
@@ -98,9 +100,11 @@
 					int prodQuantity = item.getQuantity();
 
 					ProductBean product = new ProductServiceImpl().getProductDetails(prodId);
-
-					double currAmount = product.getProdPrice() * prodQuantity;
-
+					if(false /*checks if coupon code exists, need to expand for specific number of that item, select types of items, etc*/){
+						currAmount = (product.getProdPrice() /* *(1-coupon.getDiscount())*/) * prodQuantity;
+					}else{
+						currAmount = product.getProdPrice() * prodQuantity;
+					}
 					totAmount += currAmount;
 
 					if (prodQuantity > 0) {
@@ -151,6 +155,16 @@
 								formaction="payment.jsp?amount=<%=totAmount%>">Pay Now</button>
 						</form></td>
 
+				</tr>
+				<!-- Section added by Celso Fuentes in order to display the form where a user can apply for a coupon-->
+				<tr style="background-color: grey; color: white;">
+					<td>
+					<form method="post" action="./ApplyCoupon">
+						<label>Enter Coupon Code:</label>
+						<input type="text" placeholder="Enter Coupon Code Here">
+						<input type="submit" name="couponCode" value="Apply" style="max-width: 80px; background-color: blue; color: white;">
+					</form>
+					</td>
 				</tr>
 				<%
 				}
