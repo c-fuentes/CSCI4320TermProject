@@ -357,6 +357,21 @@ public class CartServiceImpl implements CartService {
 		return count;
 	}
 
+	// discount feature
+	public double calculateDiscountedTotal(String userId, double discountPercentage) {
+	    double total = 0.0;
+	    List<CartBean> cartItems = getAllCartItems(userId);
+
+	    for (CartBean item : cartItems) {
+	        ProductBean product = new ProductServiceImpl().getProductDetails(item.getProdId());
+	        double itemTotal = product.getProdPrice() * item.getQuantity();
+	        total += itemTotal;
+	    }
+
+	    // Apply discount
+	    double discount = total * (discountPercentage / 100);
+	    return total - discount;
+	}
 	@Override
 	public int getCartItemCount(String userId, String itemId) {
 		int count = 0;

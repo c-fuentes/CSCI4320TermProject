@@ -26,14 +26,11 @@
 	String password = (String) session.getAttribute("password");
 
 	if (userName == null || password == null) {
-
 		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
-
 	}
 
 	String addS = request.getParameter("add");
 	if (addS != null) {
-
 		int add = Integer.parseInt(addS);
 		String uid = request.getParameter("uid");
 		String pid = request.getParameter("pid");
@@ -42,32 +39,27 @@
 		CartServiceImpl cart = new CartServiceImpl();
 
 		if (add == 1) {
-			//Add Product into the cart
+			// Add Product into the cart
 			cartQty += 1;
 			if (cartQty <= avail) {
-		cart.addProductToCart(uid, pid, 1);
+				cart.addProductToCart(uid, pid, 1);
 			} else {
-		response.sendRedirect("./AddtoCart?pid=" + pid + "&pqty=" + cartQty);
+				response.sendRedirect("./AddtoCart?pid=" + pid + "&pqty=" + cartQty);
 			}
 		} else if (add == 0) {
-			//Remove Product from the cart
+			// Remove Product from the cart
 			cart.removeProductFromCart(uid, pid);
 		}
 	}
 	%>
-
-
 
 	<jsp:include page="header.jsp" />
 
 	<div class="text-center"
 		style="color: green; font-size: 24px; font-weight: bold;">Cart
 		Items</div>
-	<!-- <script>document.getElementById('mycart').innerHTML='<i data-count="20" class="fa fa-shopping-cart fa-3x icon-white badge" style="background-color:#333;margin:0px;padding:0px; margin-top:5px;"></i>'</script>
- -->
-	<!-- Start of Product Items List -->
-	<div class="container">
 
+	<div class="container">
 		<table class="table table-hover">
 			<thead
 				style="background-color: #186188; color: white; font-size: 16px; font-weight: bold;">
@@ -84,27 +76,16 @@
 			<tbody
 				style="background-color: white; font-size: 15px; font-weight: bold;">
 
-
-
 				<%
 				CartServiceImpl cart = new CartServiceImpl();
 				List<CartBean> cartItems = new ArrayList<CartBean>();
 				cartItems = cart.getAllCartItems(userName);
 				double totAmount = 0;
-				String coupon = (String) session.getAttribute("coupon");
-				double currAmount = 0;
 				for (CartBean item : cartItems) {
-
 					String prodId = item.getProdId();
-
 					int prodQuantity = item.getQuantity();
-
 					ProductBean product = new ProductServiceImpl().getProductDetails(prodId);
-					if(false /*checks if coupon code exists, need to expand for specific number of that item, select types of items, etc*/){
-						currAmount = (product.getProdPrice() /* *(1-coupon.getDiscount())*/) * prodQuantity;
-					}else{
-						currAmount = product.getProdPrice() * prodQuantity;
-					}
+					double currAmount = product.getProdPrice() * prodQuantity;
 					totAmount += currAmount;
 
 					if (prodQuantity > 0) {
@@ -132,7 +113,7 @@
 				</tr>
 
 				<%
-				}
+					}
 				}
 				%>
 
@@ -141,8 +122,24 @@
 						Pay (in Rupees)</td>
 					<td><%=totAmount%></td>
 				</tr>
+
 				<%
-				if (totAmount != 0) {
+				double discountPercentage = 10.0; // Define the discount percentage
+				double discountedTotal = cart.calculateDiscountedTotal(userName, discountPercentage);
+				%>
+
+				<tr style="background-color: grey; color: white;">
+					<td colspan="6" style="text-align: center;">Discount (10%)</td>
+					<td>-<%=totAmount - discountedTotal%></td>
+				</tr>
+
+				<tr style="background-color: grey; color: white;">
+					<td colspan="6" style="text-align: center;">Total After Discount</td>
+					<td><%=discountedTotal%></td>
+				</tr>
+
+				<%
+				if (discountedTotal != 0) {
 				%>
 				<tr style="background-color: grey; color: white;">
 					<td colspan="4" style="text-align: center;">
@@ -152,19 +149,8 @@
 						</form></td>
 					<td colspan="2" align="center"><form method="post">
 							<button style="background-color: blue; color: white;"
-								formaction="payment.jsp?amount=<%=totAmount%>">Pay Now</button>
+								formaction="payment.jsp?amount=<%=discountedTotal%>">Pay Now</button>
 						</form></td>
-
-				</tr>
-				<!-- Section added by Celso Fuentes in order to display the form where a user can apply for a coupon-->
-				<tr style="background-color: grey; color: white;">
-					<td>
-					<form method="post" action="./ApplyCoupon">
-						<label>Enter Coupon Code:</label>
-						<input type="text" placeholder="Enter Coupon Code Here">
-						<input type="submit" name="couponCode" value="Apply" style="max-width: 80px; background-color: blue; color: white;">
-					</form>
-					</td>
 				</tr>
 				<%
 				}
@@ -172,8 +158,6 @@
 			</tbody>
 		</table>
 	</div>
-	<!-- ENd of Product Items List -->
-
 
 	<%@ include file="footer.html"%>
 
