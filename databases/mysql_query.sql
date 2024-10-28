@@ -153,6 +153,23 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 
+-- -----------------------------------------------------
+-- Table `shopping-cart`.`coupon`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `shoppin-cart`.`coupon`;
+CREATE TABLE `coupon`(
+  `code` VARCHAR(45) NOT NULL,
+  `discount` double NOT NULL,
+  `valid_until` date default NULL, 
+  `ptype` VARCHAR(20) DEFAULT NULL,
+  `max_Quantity` INT DEFAULT NULL,
+  primary key(`code`)
+) 
+ENGINE=InnoDB 
+DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_0900_ai_cicoupon;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
