@@ -175,6 +175,12 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -- -----------------------------------------------------
+-- Data for table `shopping-cart`.`coupon`
+-- -----------------------------------------------------
+INSERT INTO `shopping-cart`.`coupon` (`code`, `discount`, `valid_until`, `ptype`, `max_Quantity`) VALUES ('THANKSGIVING', 0.25, '2024-12-01', 'all', NULL);
+INSERT INTO `shopping-cart`.`coupon` (`code`, `discount`, `valid_until`, `ptype`, `max_Quantity`) VALUES ('APPLE', 0.10, '2025-01-01', 'mobile', 1);
+
+-- -----------------------------------------------------
 -- Data for table `shopping-cart`.`product`
 -- -----------------------------------------------------
 START TRANSACTION;
