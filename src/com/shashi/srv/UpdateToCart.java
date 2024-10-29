@@ -71,7 +71,7 @@ public class UpdateToCart extends HttpServlet {
 			DemandServiceImpl demand = new DemandServiceImpl();
 
 			boolean flag = demand.addProduct(demandBean);
-
+			//might need changes because of no curly braces, assuming braces at line 75 and 78
 			if (flag)
 				status += "<br/>Later, We Will Mail You when " + product.getProdName()
 						+ " will be available into the Store!";
@@ -84,7 +84,9 @@ public class UpdateToCart extends HttpServlet {
 
 		} else {
 			String status = cart.updateProductToCart(userId, prodId, pQty);
-
+			
+			//if to check on coupon activation, if true mess with updateProductToCart 
+			
 			RequestDispatcher rd = request.getRequestDispatcher("cartDetails.jsp");
 
 			rd.include(request, response);
