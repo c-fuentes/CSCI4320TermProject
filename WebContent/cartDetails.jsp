@@ -21,10 +21,14 @@
 <body style="background-color: #E6F9E6;">
 
 	<%
+	if (session.getAttribute("couponDiscount") == null){
+	 session.setAttribute("couponDiscount", 0.0);
+	}
 	/* Checking the user credentials */
 	String userName = (String) session.getAttribute("username");
 	String password = (String) session.getAttribute("password");
 
+	
 	if (userName == null || password == null) {
 		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
 	}
@@ -124,12 +128,14 @@
 				</tr>
 
 				<%
-				double discountPercentage = 10.0; // Define the discount percentage
+				
+				double discountPercentage = (Double) session.getAttribute("couponDiscount"); // Define the discount percentage
+				System.out.println(discountPercentage);
 				double discountedTotal = cart.calculateDiscountedTotal(userName, discountPercentage);
 				%>
-
+				<% if(discountPercentage > 0.0){%>
 				<tr style="background-color: grey; color: white;">
-					<td colspan="6" style="text-align: center;">Discount (10%)</td>
+					<td colspan="6" style="text-align: center;">Discount <%=discountPercentage%></td>
 					<td>-<%=totAmount - discountedTotal%></td>
 				</tr>
 
@@ -137,7 +143,7 @@
 					<td colspan="6" style="text-align: center;">Total After Discount</td>
 					<td><%=discountedTotal%></td>
 				</tr>
-
+				<% }%>
 				<%
 				if (discountedTotal != 0) {
 				%>
@@ -155,6 +161,17 @@
 				<%
 				}
 				%>
+				<!-- Section added by Celso Fuentes in order to display the form where a user can apply for a coupon-->
+				<tr style="background-color: grey; color: white;">
+					<td>
+					<form method="post" action="./ApplyCoupon">
+						<label>Enter Coupon Code:</label>
+						<input type="text" placeholder="Enter Coupon Code Here" style="color: black">
+						<input type="submit" name="couponCode" value="Apply" style="max-width: 80px; background-color: blue; color: white;">
+					</form>
+					</td>
+				</tr>
+				
 			</tbody>
 		</table>
 	</div>
