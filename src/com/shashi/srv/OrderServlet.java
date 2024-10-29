@@ -31,7 +31,10 @@ public class OrderServlet extends HttpServlet {
 
 			response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
 		}
-
+		
+		session.removeAttribute("coupon");
+		session.removeAttribute("couponDiscount");
+		
 		double paidAmount = Double.parseDouble(request.getParameter("amount"));
 		String status = new OrderServiceImpl().paymentSuccess(userName, paidAmount);
 
