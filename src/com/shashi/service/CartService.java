@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.shashi.beans.CartBean;
 
+
+
 public interface CartService {
 
 	public String addProductToCart(String userId, String prodId, int prodQty);
@@ -19,5 +21,8 @@ public interface CartService {
 	public String removeProductFromCart(String userId, String prodId);
 
 	public boolean removeAProduct(String userId, String prodId);
+	
+	//discount 
+	public double calculateDiscountedTotal(String userId, double totalAmount);
 
 }
