@@ -166,7 +166,7 @@
 					<td>
 					<form method="post" action="./ApplyCoupon">
 						<label>Enter Coupon Code:</label>
-						<input type="text" placeholder="Enter Coupon Code Here" style="color: black">
+						<input type="text" name="couponCode" placeholder="Enter Coupon Code Here" style="color: black">
 						<input type="submit" name="couponCode" value="Apply" style="max-width: 80px; background-color: blue; color: white;">
 					</form>
 					</td>
