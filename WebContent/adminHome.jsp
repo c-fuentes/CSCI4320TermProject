@@ -19,6 +19,7 @@
 <body style="background-color: #E6F9E6;">
 	<%
 	/* Checking the user credentials */
+	session.setAttribute("pCount", 0);
 	String userType = (String) session.getAttribute("usertype");
 	String userName = (String) session.getAttribute("username");
 	String password = (String) session.getAttribute("password");
@@ -48,6 +49,9 @@
 				<br>
 				<button type="submit" formaction="addProduct.jsp">Add
 					products</button>
+				<br>
+				<button type="submit" formaction="AddProductLine.jsp">Add
+					product line</button>
 				<br>
 				<br>
 				<button type="submit" formaction="removeProduct.jsp">Remove

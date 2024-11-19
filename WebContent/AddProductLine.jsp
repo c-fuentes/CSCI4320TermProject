@@ -1,7 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-<%@ page import="java.sql.Connection, java.sql.PreparedStatement, 
-java.sql.ResultSet, java.sql.SQLException, com.shashi.utility.DBUtil"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,7 +20,7 @@ java.sql.ResultSet, java.sql.SQLException, com.shashi.utility.DBUtil"%>
 	String userType = (String) session.getAttribute("usertype");
 	String userName = (String) session.getAttribute("username");
 	String password = (String) session.getAttribute("password");
-
+	
 	if (userType == null || !userType.equals("admin")) {
 
 		response.sendRedirect("login.jsp?message=Access Denied, Login as admin!!");
@@ -37,18 +35,75 @@ java.sql.ResultSet, java.sql.SQLException, com.shashi.utility.DBUtil"%>
 	%>
 
 	<jsp:include page="header.jsp" />
-
+	
 	<%
 	String message = request.getParameter("message");
+	int count = (int) session.getAttribute("pCount");
+	if(count == 0){
 	%>
 	<div class="container">
 		<div class="row"
 			style="margin-top: 5px; margin-left: 2px; margin-right: 2px;">
-			<form action="./AddProductSrv" method="post"
+			<form action="./WorkAroundAddProductLineSrv" method="post"
+				enctype="multipart/form-data" class="col-md-6 col-md-offset-3"
+				style="border: 2px solid black; border-radius: 10px; background-color: #FFE5CC; padding: 10px;">
+				<div style="font-weight: bold;" class="text-center">
+					<h2 style="color: green;">Product Line Addition Form</h2>
+					<%
+					if (message != null) {
+					%>
+					<p style="color: blue;">
+						<%=message%>
+					</p>
+					<%
+					}
+					%>
+				</div>
+				<div></div>
+				
+				<div class="row">
+					<div class="col-md-6 form-group">
+						<label for="producttype">Product Line Type</label> 
+						<input type="text"
+							placeholder="Enter New Product Line Type" name="ptype"
+							class="form-control" id="last_name" required>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6 form-group">
+						<label for="last_name">Number of New Products in Product Line</label> <input type="number"
+							placeholder="Enter Number" name="pnum"
+							class="form-control" id="last_name" required>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-6 text-center" style="margin-bottom: 2px;">
+						<button type="reset" class="btn btn-danger">Reset</button>
+					</div>
+					<div class="col-md-6 text-center">
+						<button type="submit" class="btn btn-success">Add Product Line</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<% }%>
+	
+	<%
+	int numOfNewProducts = (int) session.getAttribute("numOfNewProducts");
+	String ptype = (String) session.getAttribute("ptype");
+	if(numOfNewProducts > 0){
+	%>
+	<div class="container">
+		<div class="row"
+			style="margin-top: 5px; margin-left: 2px; margin-right: 2px;">
+			<form action="./WorkAroundAddProductLineSrv" method="post"
 				enctype="multipart/form-data" class="col-md-6 col-md-offset-3"
 				style="border: 2px solid black; border-radius: 10px; background-color: #FFE5CC; padding: 10px;">
 				<div style="font-weight: bold;" class="text-center">
 					<h2 style="color: green;">Product Addition Form</h2>
+					<h3>Product #<%=count%> of <%=numOfNewProducts%></h3>
 					<%
 					if (message != null) {
 					%>
@@ -67,36 +122,8 @@ java.sql.ResultSet, java.sql.SQLException, com.shashi.utility.DBUtil"%>
 							id="last_name" required>
 					</div>
 					<div class="col-md-6 form-group">
-						<label for="producttype">Product Type</label> <select name="type"
-							id="producttype" class="form-control" required>
-							<%
-				Connection con = DBUtil.provideConnection();
-
-				PreparedStatement ps = null;
-
-				ResultSet rs = null;
-
-				try {
-					ps = con.prepareStatement("select DISTINCT ptype from product");
-
-					rs = ps.executeQuery();
-
-					while(rs.next()) {
-						String type = rs.getString("ptype");
-						%>
-						<option value=<%=type%>><%=type%></option>
-						<%
-					}
-				} catch (SQLException e) {
-
-					e.printStackTrace();
-				}
-
-				DBUtil.closeConnection(con);
-				DBUtil.closeConnection(ps);
-				DBUtil.closeConnection(rs);
-				%>
-						</select>
+						<label for="producttype">Product Type</label> 
+						<p><%=ptype%></p>
 					</div>
 				</div>
 				<div class="form-group">
@@ -133,7 +160,14 @@ java.sql.ResultSet, java.sql.SQLException, com.shashi.utility.DBUtil"%>
 			</form>
 		</div>
 	</div>
-
+	<% 
+	}
+	
+	if(count > numOfNewProducts){
+		session.setAttribute("pCount", 0);
+		session.setAttribute("numOfProduct", 0);
+	}
+	%>
 	<%@ include file="footer.html"%>
 </body>
 </html>

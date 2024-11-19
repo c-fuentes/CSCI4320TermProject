@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-<%@ page import="com.shashi.service.impl.*, com.shashi.service.*"%>
+<%@ page import="com.shashi.service.impl.*, com.shashi.service.*, java.sql.Connection, java.sql.PreparedStatement, 
+java.sql.ResultSet, java.sql.SQLException, com.shashi.utility.DBUtil"%>
 
 <!DOCTYPE html>
 <html>
@@ -66,13 +67,36 @@
 						data-toggle="dropdown" href="#">Category <span class="caret"></span>
 					</a>
 						<ul class="dropdown-menu">
-							<li><a href="index.jsp?type=mobile">Mobiles</a></li>
-							<li><a href="index.jsp?type=tv">TVs</a></li>
-							<li><a href="index.jsp?type=laptop">Laptops</a></li>
-							<li><a href="index.jsp?type=camera">Camera</a></li>
-							<li><a href="index.jsp?type=speaker">Speakers</a></li>
-							<li><a href="index.jsp?type=tablet">Tablets</a></li>
+							<%
+				Connection con = DBUtil.provideConnection();
+
+				PreparedStatement ps = null;
+
+				ResultSet rs = null;
+
+				try {
+					ps = con.prepareStatement("select DISTINCT ptype from product");
+
+					rs = ps.executeQuery();
+
+					while(rs.next()) {
+						String type = rs.getString("ptype");
+						%>
+						<li><a href="index.jsp?type=<%=type%>"><%=type%></a></li>
+						<%
+					}
+				} catch (SQLException e) {
+
+					e.printStackTrace();
+				}
+
+				DBUtil.closeConnection(con);
+				DBUtil.closeConnection(ps);
+				DBUtil.closeConnection(rs);
+				%>
 						</ul></li>
+						
+						
 				</ul>
 			</div>
 		</div>
@@ -103,12 +127,33 @@
 						data-toggle="dropdown" href="#">Category <span class="caret"></span>
 					</a>
 						<ul class="dropdown-menu">
-							<li><a href="userHome.jsp?type=mobile">Mobiles</a></li>
-							<li><a href="userHome.jsp?type=tv">TV</a></li>
-							<li><a href="userHome.jsp?type=laptop">Laptops</a></li>
-							<li><a href="userHome.jsp?type=camera">Camera</a></li>
-							<li><a href="userHome.jsp?type=speaker">Speakers</a></li>
-							<li><a href="userHome.jsp?type=tablet">Tablets</a></li>
+							<%
+				Connection con = DBUtil.provideConnection();
+
+				PreparedStatement ps = null;
+
+				ResultSet rs = null;
+
+				try {
+					ps = con.prepareStatement("select DISTINCT ptype from product");
+
+					rs = ps.executeQuery();
+
+					while(rs.next()) {
+						String type = rs.getString("ptype");
+						%>
+						<li><a href="index.jsp?type=<%=type%>"><%=type%></a></li>
+						<%
+					}
+				} catch (SQLException e) {
+
+					e.printStackTrace();
+				}
+
+				DBUtil.closeConnection(con);
+				DBUtil.closeConnection(ps);
+				DBUtil.closeConnection(rs);
+				%>
 						</ul></li>
 					<%
 					if (notf == 0) {
@@ -157,12 +202,33 @@
 						data-toggle="dropdown" href="#">Category <span class="caret"></span>
 					</a>
 						<ul class="dropdown-menu">
-							<li><a href="adminViewProduct.jsp?type=mobile">Mobiles</a></li>
-							<li><a href="adminViewProduct.jsp?type=tv">Tvs</a></li>
-							<li><a href="adminViewProduct.jsp?type=laptop">Laptops</a></li>
-							<li><a href="adminViewProduct.jsp?type=camera">Camera</a></li>
-							<li><a href="adminViewProduct.jsp?type=speaker">Speakers</a></li>
-							<li><a href="adminViewProduct.jsp?type=tablet">Tablets</a></li>
+							<%
+				Connection con = DBUtil.provideConnection();
+
+				PreparedStatement ps = null;
+
+				ResultSet rs = null;
+
+				try {
+					ps = con.prepareStatement("select DISTINCT ptype from product");
+
+					rs = ps.executeQuery();
+
+					while(rs.next()) {
+						String type = rs.getString("ptype");
+						%>
+						<li><a href="index.jsp?type=<%=type%>"><%=type%></a></li>
+						<%
+					}
+				} catch (SQLException e) {
+
+					e.printStackTrace();
+				}
+
+				DBUtil.closeConnection(con);
+				DBUtil.closeConnection(ps);
+				DBUtil.closeConnection(rs);
+				%>
 						</ul></li>
 					<li><a href="adminStock.jsp">Stock</a></li>
 					<li><a href="shippedItems.jsp">Shipped</a></li>
@@ -174,6 +240,7 @@
 					</a>
 						<ul class="dropdown-menu">
 							<li><a href="addProduct.jsp">Add Product</a></li>
+							<li><a href="AddProductLine.jsp">Add Product Line</a></li>
 							<li><a href="removeProduct.jsp">Remove Product</a></li>
 							<li><a href="updateProductById.jsp">Update Product</a></li>
 						</ul></li>
