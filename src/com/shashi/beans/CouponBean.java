@@ -30,7 +30,7 @@ public class CouponBean implements Serializable {
 		return discount;
 	}
 
-	public void setDiscount(int discount) {
+	public void setDiscount(double discount) {
 		this.discount = discount;
 	}
 
@@ -45,6 +45,7 @@ public class CouponBean implements Serializable {
 	public String getPType() {
 		return ptype;
 	}
+	
 	
 	public void setPType(String ptype) {
 		this.ptype = ptype;

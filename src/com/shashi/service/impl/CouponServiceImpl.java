@@ -4,114 +4,120 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.shashi.beans.CouponBean;
-import com.shashi.beans.ProductBean;
 import com.shashi.service.CouponService;
+import com.shashi.service.DiscountStrategy;
 import com.shashi.utility.DBUtil;
 
-public class CouponServiceImpl implements CouponService{
-	@Override
-	public boolean validCoupon(String code) {
-		Connection con = DBUtil.provideConnection();
+public class CouponServiceImpl implements CouponService {
+    private DiscountStrategy discountStrategy;
 
-		PreparedStatement ps = null;
+    public void setDiscountStrategy(DiscountStrategy strategy) {
+        this.discountStrategy = strategy;
+    }
 
-		ResultSet rs = null;
-		
-		boolean result = true;
+    @Override
+    public boolean validCoupon(String code) {
+        Connection con = DBUtil.provideConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        boolean result = false;
 
-		try {
-			ps = con.prepareStatement("select * from coupon where code=?");
+        try {
+            ps = con.prepareStatement("SELECT * FROM coupon WHERE code=?");
+            ps.setString(1, code);
+            rs = ps.executeQuery();
 
-			ps.setString(1, code);
+            if (rs.next()) { // If a record exists, the coupon is valid
+                result = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(con);
+            DBUtil.closeConnection(ps);
+            DBUtil.closeConnection(rs);
+        }
+        return result;
+    }
 
-			rs = ps.executeQuery();
+    @Override
+    public double getCouponDiscount(String code) {
+        Connection con = DBUtil.provideConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        double discount = 0.0;
 
-			if (rs.next() && !rs.wasNull()) {
-				result = true;
-				System.out.println(result);
-			}else {
-				result = false;
-			}
-		} catch (SQLException e) {
+        try {
+            ps = con.prepareStatement("SELECT discount, type FROM coupon WHERE code=?");
+            ps.setString(1, code);
+            rs = ps.executeQuery();
 
-			e.printStackTrace();
-		}
+            if (rs.next()) {
+                double discountValue = rs.getDouble("discount");
+                String type = rs.getString("type");
 
-		DBUtil.closeConnection(con);
-		DBUtil.closeConnection(ps);
-		DBUtil.closeConnection(rs);
-		
-		System.out.println(result);
-		
-		return result;
-		
-	}
-	
-	@Override
-	public double getCouponDiscount(String code) {
-		Connection con = DBUtil.provideConnection();
+                System.out.println("Coupon found: Discount = " + discountValue + ", Type = " + type);
 
-		PreparedStatement ps = null;
+                // Create a CouponBean object
+                CouponBean coupon = new CouponBean();
+                coupon.setDiscount(discountValue);
+                coupon.setPType(type);
 
-		ResultSet rs = null;
-		
-		double discount = 0.0;
-		
-		try {
-			ps = con.prepareStatement("select discount from coupon where code=?");
+                // Dynamically set the discount strategy
+                if ("PERCENTAGE".equalsIgnoreCase(type)) {
+                    setDiscountStrategy(new PercentageDiscountStrategy());
+                } else if ("FIXED".equalsIgnoreCase(type)) {
+                    setDiscountStrategy(new FixedDiscountStrategy());
+                } else {
+                    System.out.println("Unknown discount type: " + type);
+                }
 
-			ps.setString(1, code);
+                // Apply the discount strategy
+                if (discountStrategy != null) {
+                    // Replace 100.0 with the actual price
+                    discount = discountStrategy.applyDiscount(100.0, coupon);
+                    System.out.println("Calculated discount: " + discount);
+                } else {
+                    System.out.println("No discount strategy found for type: " + type);
+                }
+            } else {
+                System.out.println("Coupon code not found: " + code);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(con);
+            DBUtil.closeConnection(ps);
+            DBUtil.closeConnection(rs);
+        }
+        return discount;
+    }
 
-			rs = ps.executeQuery();
 
-			if (rs.next() && !rs.wasNull()) {
-				discount = rs.getDouble(1);
-			}
-		} catch (SQLException e) {
+    @Override
+    public int getCouponMaxApplicableQuantity(String code) {
+        Connection con = DBUtil.provideConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int maxQuantity = Integer.MAX_VALUE; // Default to a large value
 
-			e.printStackTrace();
-		}
+        try {
+            ps = con.prepareStatement("SELECT max_Quantity FROM coupon WHERE code=?");
+            ps.setString(1, code);
+            rs = ps.executeQuery();
 
-		DBUtil.closeConnection(con);
-		DBUtil.closeConnection(ps);
-		DBUtil.closeConnection(rs);
-		
-		return discount;
-	}
-	
-	@Override
-	public int getCouponMaxApplicableQuantity(String code) {
-		Connection con = DBUtil.provideConnection();
-
-		PreparedStatement ps = null;
-
-		ResultSet rs = null;
-		
-		int maxQuantity = 999999999;
-		
-		try {
-			ps = con.prepareStatement("select max_Quantity from coupon where code=?");
-
-			ps.setString(1, code);
-
-			rs = ps.executeQuery();
-
-			if (rs.next() && !rs.wasNull()) {
-				maxQuantity = rs.getInt(1);
-			}
-		} catch (SQLException e) {
-
-			e.printStackTrace();
-		}
-
-		DBUtil.closeConnection(con);
-		DBUtil.closeConnection(ps);
-		DBUtil.closeConnection(rs);
-		
-		return maxQuantity;
-	}
+            if (rs.next()) {
+                maxQuantity = rs.getInt("max_Quantity");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.closeConnection(con);
+            DBUtil.closeConnection(ps);
+            DBUtil.closeConnection(rs);
+        }
+        return maxQuantity;
+    }
 }
