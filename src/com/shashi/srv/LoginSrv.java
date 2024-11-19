@@ -46,7 +46,11 @@ public class LoginSrv extends HttpServlet {
 				session.setAttribute("username", userName);
 				session.setAttribute("password", password);
 				session.setAttribute("usertype", userType);
-
+				
+				session.setAttribute("pCount", 0);
+				session.setAttribute("ptype", "other");
+				session.setAttribute("numOfNewProducts", 0);
+				
 				rd.forward(request, response);
 
 			} else {
