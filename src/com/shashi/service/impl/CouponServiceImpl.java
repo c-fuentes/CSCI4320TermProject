@@ -65,7 +65,7 @@ public class CouponServiceImpl implements CouponService {
                 coupon.setDiscount(discountValue);
                 coupon.setPType(type);
 
-                // Dynamically set the discount strategy
+                // Set the discount strategy
                 if ("PERCENTAGE".equalsIgnoreCase(type)) {
                     setDiscountStrategy(new PercentageDiscountStrategy());
                 } else if ("FIXED".equalsIgnoreCase(type)) {
@@ -101,7 +101,7 @@ public class CouponServiceImpl implements CouponService {
         Connection con = DBUtil.provideConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        int maxQuantity = Integer.MAX_VALUE; // Default to a large value
+        int maxQuantity = Integer.MAX_VALUE; 
 
         try {
             ps = con.prepareStatement("SELECT max_Quantity FROM coupon WHERE code=?");
