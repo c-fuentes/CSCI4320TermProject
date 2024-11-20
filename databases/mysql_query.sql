@@ -179,7 +179,11 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- -----------------------------------------------------
 INSERT INTO `shopping-cart`.`coupon` (`code`, `discount`, `valid_until`, `ptype`, `max_Quantity`) VALUES ('THANKSGIVING', 0.25, '2024-12-01', 'all', NULL);
 INSERT INTO `shopping-cart`.`coupon` (`code`, `discount`, `valid_until`, `ptype`, `max_Quantity`) VALUES ('APPLE', 0.10, '2025-01-01', 'mobile', 1);
-
+ALTER TABLE coupon ADD COLUMN type VARCHAR(50);
+UPDATE coupon SET type='PERCENTAGE' WHERE code='THANKSGIVING';
+UPDATE coupon SET type='FIXED' WHERE code='APPLE';
+UPDATE coupon SET discount = .90 WHERE code = 'THANKSGIVING';
+UPDATE coupon SET discount = 95 WHERE code = 'APPLE';
 -- -----------------------------------------------------
 -- Data for table `shopping-cart`.`product`
 -- -----------------------------------------------------
