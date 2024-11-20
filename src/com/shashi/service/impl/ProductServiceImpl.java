@@ -1,5 +1,5 @@
 package com.shashi.service.impl;
-
+import com.shashi.service.impl.ProductPriceUpdateVisitor;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import com.shashi.service.ProductVisitor;
 
 import com.shashi.beans.DemandBean;
 import com.shashi.beans.ProductBean;
@@ -156,32 +157,37 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public String updateProductPrice(String prodId, double updatedPrice) {
-		String status = "Price Updation Failed!";
+	    String status = "Price Updation Failed!";
+	    ProductBean product = getProductDetails(prodId);
 
-		Connection con = DBUtil.provideConnection();
+	    if (product != null) {
+	        // Use Visitor to update price
+	        ProductVisitor visitor = new ProductPriceUpdateVisitor(updatedPrice);
+	        product.accept(visitor);
 
-		PreparedStatement ps = null;
+	        // Persist changes
+	        Connection con = DBUtil.provideConnection();
+	        PreparedStatement ps = null;
 
-		try {
-			ps = con.prepareStatement("update product set pprice=? where pid=?");
+	        try {
+	            ps = con.prepareStatement("update product set pprice=? where pid=?");
+	            ps.setDouble(1, product.getProdPrice());
+	            ps.setString(2, prodId);
 
-			ps.setDouble(1, updatedPrice);
-			ps.setString(2, prodId);
+	            int k = ps.executeUpdate();
+	            if (k > 0) status = "Price Updated Successfully!";
+	        } catch (SQLException e) {
+	            status = "Error: " + e.getMessage();
+	            e.printStackTrace();
+	        } finally {
+	            DBUtil.closeConnection(con);
+	            DBUtil.closeConnection(ps);
+	        }
+	    }
 
-			int k = ps.executeUpdate();
-
-			if (k > 0)
-				status = "Price Updated Successfully!";
-		} catch (SQLException e) {
-			status = "Error: " + e.getMessage();
-			e.printStackTrace();
-		}
-
-		DBUtil.closeConnection(con);
-		DBUtil.closeConnection(ps);
-
-		return status;
+	    return status;
 	}
+
 
 	@Override
 	public List<ProductBean> getAllProducts() {
